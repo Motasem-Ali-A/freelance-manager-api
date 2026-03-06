@@ -1,0 +1,6 @@
+@FreelanceManager.API_HostAddress = http://localhost:5008
+
+GET {{FreelanceManager.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
