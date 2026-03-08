@@ -1,3 +1,5 @@
+using FreelanceManager.Data;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -11,6 +13,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+builder.Services.AddDbContext<ApplicationDbContext>(options=>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 app.UseHttpsRedirection();
 
