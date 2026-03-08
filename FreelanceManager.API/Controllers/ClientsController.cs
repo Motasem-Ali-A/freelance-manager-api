@@ -1,4 +1,3 @@
-using System.Xml;
 using FreelanceManager.Core.DTOs.Client;
 using Microsoft.AspNetCore.Mvc;
 
