@@ -14,5 +14,7 @@ namespace FreelanceManager.Core.Models
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public int ClientId { get; set; }
+        public Client Client { get; set; } = null!;
+        public ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
     }
 }
