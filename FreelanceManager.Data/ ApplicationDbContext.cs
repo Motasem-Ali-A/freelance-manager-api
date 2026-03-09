@@ -17,6 +17,64 @@ namespace FreelanceManager.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Client>()
+                .HasMany(c => c.Projects)
+                .WithOne(p => p.Client)
+                .HasForeignKey(p => p.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Client>()
+                .HasMany(c => c.Invoices)
+                .WithOne(i => i.Client)
+                .HasForeignKey(i => i.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Project>()
+                .HasMany(p => p.TimeEntries)
+                .WithOne(t => t.Project)
+                .HasForeignKey(t => t.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Invoice>()
+                .HasMany(i => i.InvoiceItems)
+                .WithOne(it => it.Invoice)
+                .HasForeignKey(it => it.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+            modelBuilder.Entity<Project>()
+                .Property(p => p.HourlyRate)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<Project>()
+                .Property(p => p.FixedPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<TimeEntry>()
+                .Property(t => t.HoursWorked)
+                .HasPrecision(4, 2);
+
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.Subtotal)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.TaxAmount)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.TotalAmount)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.TaxRate)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<InvoiceItem>()
+                .Property(ii => ii.UnitPrice)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<InvoiceItem>()
+                .Property(ii => ii.Total)
+                .HasPrecision(18, 2);
+            
+
         }
     }
 }
