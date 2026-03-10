@@ -1,5 +1,8 @@
 using FreelanceManager.Core.DTOs.Project;
+using FreelanceManager.Core.Models;
+using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -7,60 +10,62 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class ProjectsController : ControllerBase
     {
-        private static List<ProjectResponseDto> _projects = new List<ProjectResponseDto>
+        private readonly ApplicationDbContext _context;
+        public ProjectsController(ApplicationDbContext context)
         {
-            new ProjectResponseDto
-            {
-                Id =1,
-                CreatedAt = DateTime.UtcNow,
-                Title = "E-commerce Website",
-                Description ="build an E-commerce Website",
-                Status = "Not started",
-                StartDate = DateTime.Today,
-                EndDate = new DateTime (2026, 6, 30),
-                HourlyRate = 20,
-                FixedPrice = 0,
-                BillingType = "Hourly",
-                ClientId =1
-            }
-            ,
-            new ProjectResponseDto
-            {
-                Id =2,
-                CreatedAt = DateTime.UtcNow,
-                Title = "Website Redesign",
-                Description ="modren website Redesign",
-                Status = "in progress",
-                StartDate = DateTime.Today,
-                EndDate = new DateTime (2026, 4, 15),
-                HourlyRate = 0,
-                FixedPrice = 300,
-                BillingType = "Fixed",
-                ClientId =2
-
-            }
-        };
+            _context = context;
+        }
 
         [HttpGet]
-        public IActionResult GetAllProjects()
+        public async Task<IActionResult> GetAllProjects()
         {
-            return Ok(_projects);
+            var projects = await _context.Projects.ToListAsync();
+            var responses = new List<ProjectResponseDto>();
+            foreach (var project in projects)
+            {
+                responses.Add(new ProjectResponseDto
+                {
+                    Id = project.Id,
+                    CreatedAt = project.CreatedAt,
+                    Title = project.Title,
+                    Description = project.Description,
+                    Status = project.Status,
+                    StartDate = project.StartDate,
+                    EndDate = project.EndDate,
+                    HourlyRate = project.HourlyRate,
+                    FixedPrice = project.FixedPrice,
+                    BillingType = project.BillingType,
+                    ClientId = project.ClientId
+                });
+            }
+            return Ok(responses);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var project = _projects.FirstOrDefault(p => p.Id == id);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
-            return Ok(project);
+            return Ok(new ProjectResponseDto
+            {
+                Id = project.Id,
+                CreatedAt = project.CreatedAt,
+                Title = project.Title,
+                Description = project.Description,
+                Status = project.Status,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                HourlyRate = project.HourlyRate,
+                FixedPrice = project.FixedPrice,
+                BillingType = project.BillingType,
+                ClientId = project.ClientId
+            });
         }
         [HttpPost]
-        public IActionResult AddProject([FromBody] CreateProjectDto dto)
+        public async Task<IActionResult> AddProject([FromBody] CreateProjectDto dto)
         {
-            var project = new ProjectResponseDto
+            var project = new Project
             {
-                Id = _projects.Count + 1,
-                CreatedAt = DateTime.UtcNow,
                 Title = dto.Title,
                 Description = dto.Description,
                 Status = "Not started",
@@ -71,33 +76,65 @@ namespace FreelanceManager.API.Controllers
                 BillingType = dto.BillingType,
                 ClientId = dto.ClientId
             };
-            _projects.Add(project);
-            return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
+            await _context.Projects.AddAsync(project);
+            await _context.SaveChangesAsync();
+
+            var response = new ProjectResponseDto
+            {
+                Id = project.Id,
+                CreatedAt = project.CreatedAt,
+                Title = project.Title,
+                Description = project.Description,
+                Status = project.Status,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                HourlyRate = project.HourlyRate,
+                FixedPrice = project.FixedPrice,
+                BillingType = project.BillingType,
+                ClientId = project.ClientId
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = project.Id }, response);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProject(int id, [FromBody] UpdateProjectDto dto)
+        public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
         {
-            var project = _projects.FirstOrDefault(p => p.Id == id);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
-
             project.Title = dto.Title;
             project.Description = dto.Description;
             project.Status = dto.Status;
             project.EndDate = dto.EndDate;
             project.HourlyRate = dto.HourlyRate;
             project.FixedPrice = dto.FixedPrice;
-            return Ok(project);
+
+            await _context.SaveChangesAsync();
+            return Ok(new ProjectResponseDto
+            {
+                Id = project.Id,
+                CreatedAt = project.CreatedAt,
+                Title = project.Title,
+                Description = project.Description,
+                Status = project.Status,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                HourlyRate = project.HourlyRate,
+                FixedPrice = project.FixedPrice,
+                BillingType = project.BillingType,
+                ClientId = project.ClientId
+            });
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProject(int id)
+        public async Task<IActionResult> DeleteProject(int id)
         {
-            var project = _projects.FirstOrDefault(p => p.Id == id);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
-            _projects.Remove(project);
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
