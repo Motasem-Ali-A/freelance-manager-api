@@ -1,5 +1,8 @@
 using FreelanceManager.Core.DTOs.TimeEntry;
+using FreelanceManager.Core.Models;
+using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -7,73 +10,99 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class TimeEntriesController : ControllerBase
     {
-        private static List<TimeEntryResponseDto> _timeEntries = new List<TimeEntryResponseDto>
+        private readonly ApplicationDbContext _context;
+        public TimeEntriesController(ApplicationDbContext context)
         {
-            new TimeEntryResponseDto
-            {
-                Id =1,
-                CreatedAt = DateTime.UtcNow,
-                Date = new DateTime(2026, 04, 05),
-                HoursWorked = 5,
-                Description = "Login Page Done",
-                ProjectId = 1
-            },
-            new TimeEntryResponseDto
-            {
-                Id =2,
-                CreatedAt = DateTime.UtcNow,
-                Date = new DateTime(2026, 04, 06),
-                HoursWorked = 3,
-                Description = "Navigation bar Done",
-                ProjectId = 1
-            }
-
-        };
+            _context = context;
+        }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_timeEntries);
+            var timeEntries = await _context.TimeEntries.ToListAsync();
+            var responses = new List<TimeEntryResponseDto>();
+            foreach (var timeEntry in timeEntries)
+            {
+                responses.Add(new TimeEntryResponseDto
+                {
+                    Id = timeEntry.Id,
+                    CreatedAt = timeEntry.CreatedAt,
+                    Date = timeEntry.Date,
+                    HoursWorked = timeEntry.HoursWorked,
+                    Description = timeEntry.Description,
+                    ProjectId = timeEntry.ProjectId
+
+                });
+            }
+            return Ok(responses);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var timeEntry = _timeEntries.FirstOrDefault(t => t.Id == id);
+            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
-            return Ok(timeEntry);
+            return Ok(new TimeEntryResponseDto
+            {
+                Id = timeEntry.Id,
+                CreatedAt = timeEntry.CreatedAt,
+                Date = timeEntry.Date,
+                HoursWorked = timeEntry.HoursWorked,
+                Description = timeEntry.Description,
+                ProjectId = timeEntry.ProjectId
+            });
         }
         [HttpPost]
-        public IActionResult AddTimeEntry([FromBody] CreateTimeEntryDto dto)
+        public async Task<IActionResult> AddTimeEntry([FromBody] CreateTimeEntryDto dto)
         {
-            var timeEntry = new TimeEntryResponseDto
+            var timeEntry = new TimeEntry
             {
-                Id = _timeEntries.Count + 1,
                 CreatedAt = DateTime.UtcNow,
                 Date = dto.Date,
                 HoursWorked = dto.HoursWorked,
                 Description = dto.Description,
                 ProjectId = dto.ProjectId
             };
-            _timeEntries.Add(timeEntry);
-            return CreatedAtAction(nameof(GetById), new { id = timeEntry.Id }, timeEntry);
+            await _context.TimeEntries.AddAsync(timeEntry);
+            await _context.SaveChangesAsync();
+            var response = new TimeEntryResponseDto
+            {
+                Id = timeEntry.Id,
+                CreatedAt = timeEntry.CreatedAt,
+                Date = timeEntry.Date,
+                HoursWorked = timeEntry.HoursWorked,
+                Description = timeEntry.Description,
+                ProjectId = timeEntry.ProjectId
+            };
+            return CreatedAtAction(nameof(GetById), new { id = timeEntry.Id }, response);
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryDto dto)
+        public async Task<IActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryDto dto)
         {
-            var timeEntry = _timeEntries.FirstOrDefault(t => t.Id == id);
+            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
             timeEntry.HoursWorked = dto.HoursWorked;
             timeEntry.Description = dto.Description;
-            return Ok(timeEntry);
+
+            await _context.SaveChangesAsync();
+            return Ok(new TimeEntryResponseDto
+            {
+                Id = timeEntry.Id,
+                CreatedAt = timeEntry.CreatedAt,
+                Date = timeEntry.Date,
+                HoursWorked = timeEntry.HoursWorked,
+                Description = timeEntry.Description,
+                ProjectId = timeEntry.ProjectId
+            });
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteTimeEntry(int id)
+        public async Task<IActionResult> DeleteTimeEntry(int id)
         {
-            var timeEntry = _timeEntries.FirstOrDefault(t => t.Id == id);
+            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
-            _timeEntries.Remove(timeEntry);
+            _context.TimeEntries.Remove(timeEntry);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
