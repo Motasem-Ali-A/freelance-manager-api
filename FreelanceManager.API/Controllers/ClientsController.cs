@@ -1,4 +1,5 @@
 using FreelanceManager.Core.DTOs.Client;
+using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreelanceManager.API.Controllers
@@ -7,37 +8,14 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private static List<ClientResponseDto> _clients = new List<ClientResponseDto>
+        private readonly ApplicationDbContext _context;
+        public ClientsController(ApplicationDbContext context)
         {
-            new ClientResponseDto
-            {
-                Id =1,
-                Name = "first name1",
-                Email= "example1@domain.com",
-                Phone ="123456789",
-                CompanyName = "example company 1",
-                Address = "123 Main st",
-                Notes = "Important Client",
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow
+            _context = context;
 
-            },
-            new ClientResponseDto
-            {
-                Id =2,
-                Name = "first name2",
-                Email= "example2@domain.com",
-                Phone ="111213141",
-                CompanyName = "example company 2",
-                Address = "456 Main st",
-                Notes = "",
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow
+        }
 
-            }
-        };
-
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult GetAllClients()
         {
             return Ok(_clients);
@@ -90,7 +68,7 @@ namespace FreelanceManager.API.Controllers
                 return NotFound($"Client with ID {id} not found");
             _clients.Remove(client);
             return NoContent();
-        }
+        }*/
 
     }
 
