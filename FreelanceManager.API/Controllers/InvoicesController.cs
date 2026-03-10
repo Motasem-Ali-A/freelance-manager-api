@@ -1,5 +1,8 @@
 using FreelanceManager.Core.DTOs.Invoice;
+using FreelanceManager.Core.Models;
+using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -7,92 +10,133 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
-        private static List<InvoiceResponseDto> _invoices = new List<InvoiceResponseDto>
+        private readonly ApplicationDbContext _context;
+        public InvoicesController(ApplicationDbContext context)
         {
-            new InvoiceResponseDto
-            {
-                Id = 1,
-                CreatedAt = DateTime.UtcNow,
-                InvoiceNumber = "INV - 10063",
-                IssueDate = new DateTime(2026 , 05 , 01),
-                DueDate= new DateTime(2026 , 05 , 15),
-                Status = "Sent",
-                Notes = " ",
-                Subtotal = 100,
-                TaxRate = 0.05M,
-                TaxAmount = 5,
-                TotalAmount = 105,
-                ClientId = 1
-            },
-            new InvoiceResponseDto
-            {
-                Id = 2,
-                CreatedAt = DateTime.UtcNow,
-                InvoiceNumber = "INV - 10083",
-                IssueDate = new DateTime(2026 , 05 , 10),
-                DueDate= new DateTime(2026 , 05 , 24),
-                Status = "Sent",
-                Notes = " ",
-                Subtotal = 110,
-                TaxRate = 0.05M,
-                TaxAmount = 5,
-                TotalAmount = 115.5M,
-                ClientId = 2
-            }
-
-        };
+            _context = context;
+        }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllInvoices()
         {
-            return Ok(_invoices);
+            var invoices = await _context.Invoices.ToListAsync();
+            var responses = new List<InvoiceResponseDto>();
+            foreach (var invoice in invoices)
+            {
+                responses.Add
+                (
+                    new InvoiceResponseDto
+                    {
+                        Id = invoice.Id,
+                        CreatedAt = invoice.CreatedAt,
+                        InvoiceNumber = invoice.InvoiceNumber,
+                        IssueDate = invoice.IssueDate,
+                        DueDate = invoice.DueDate,
+                        Status = invoice.Status,
+                        Notes = invoice.Notes,
+                        Subtotal = invoice.Subtotal,
+                        TaxRate = invoice.TaxRate,
+                        TaxAmount = invoice.TaxAmount,
+                        TotalAmount = invoice.TotalAmount,
+                        ClientId = invoice.ClientId
+                    }
+
+                );
+            }
+            return Ok(responses);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var invoice = _invoices.FirstOrDefault(I => I.Id == id);
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
-            return Ok(invoice);
+            return Ok(new InvoiceResponseDto
+            {
+                Id = invoice.Id,
+                CreatedAt = invoice.CreatedAt,
+                InvoiceNumber = invoice.InvoiceNumber,
+                IssueDate = invoice.IssueDate,
+                DueDate = invoice.DueDate,
+                Status = invoice.Status,
+                Notes = invoice.Notes,
+                Subtotal = invoice.Subtotal,
+                TaxRate = invoice.TaxRate,
+                TaxAmount = invoice.TaxAmount,
+                TotalAmount = invoice.TotalAmount,
+                ClientId = invoice.ClientId
+            });
         }
         [HttpPost]
-        public IActionResult AddInvoice([FromBody] CreateInvoiceDto dto)
+        public async Task<IActionResult> AddInvoice([FromBody] CreateInvoiceDto dto)
         {
-            var invoice = new InvoiceResponseDto
+            var invoice = new Invoice
             {
-                Id = _invoices.Count + 1,
                 CreatedAt = DateTime.UtcNow,
-                InvoiceNumber = "INV - 10095",
+                InvoiceNumber = "",
                 IssueDate = dto.IssueDate,
                 DueDate = dto.DueDate,
                 Status = "Draft",
                 Notes = dto.Notes,
-                Subtotal = 115,
+                Subtotal = 0,
                 TaxRate = dto.TaxRate,
                 TaxAmount = 0,
-                TotalAmount = 105.5M,
+                TotalAmount = 0,
                 ClientId = dto.ClientId
             };
-            _invoices.Add(invoice);
-            return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, invoice);
+            await _context.Invoices.AddAsync(invoice);
+            await _context.SaveChangesAsync();
+
+            var response = new InvoiceResponseDto
+            {
+                Id = invoice.Id,
+                CreatedAt = invoice.CreatedAt,
+                InvoiceNumber = invoice.InvoiceNumber,
+                IssueDate = invoice.IssueDate,
+                DueDate = invoice.DueDate,
+                Status = invoice.Status,
+                Notes = invoice.Notes,
+                Subtotal = invoice.Subtotal,
+                TaxRate = invoice.TaxRate,
+                TaxAmount = invoice.TaxAmount,
+                TotalAmount = invoice.TotalAmount,
+                ClientId = invoice.ClientId
+            };
+            return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, response);
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateInvoice(int id, [FromBody] UpdateInvoiceDto dto)
+        public async Task<IActionResult> UpdateInvoice(int id, [FromBody] UpdateInvoiceDto dto)
         {
-            var invoice = _invoices.FirstOrDefault(I => I.Id == id);
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
             invoice.DueDate = dto.DueDate;
             invoice.Status = dto.Status;
             invoice.Notes = dto.Notes;
-            return Ok(invoice);
+            await _context.SaveChangesAsync();
+            return Ok(new InvoiceResponseDto
+            {
+                Id = invoice.Id,
+                CreatedAt = invoice.CreatedAt,
+                InvoiceNumber = invoice.InvoiceNumber,
+                IssueDate = invoice.IssueDate,
+                DueDate = invoice.DueDate,
+                Status = invoice.Status,
+                Notes = invoice.Notes,
+                Subtotal = invoice.Subtotal,
+                TaxRate = invoice.TaxRate,
+                TaxAmount = invoice.TaxAmount,
+                TotalAmount = invoice.TotalAmount,
+                ClientId = invoice.ClientId
+            });
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteInvoice(int id)
+        public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = _invoices.FirstOrDefault(I => I.Id == id);
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
-            _invoices.Remove(invoice);
+            _context.Invoices.Remove(invoice);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
