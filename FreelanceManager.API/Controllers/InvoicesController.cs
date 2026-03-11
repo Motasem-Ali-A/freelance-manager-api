@@ -1,8 +1,7 @@
 using FreelanceManager.Core.DTOs.Invoice;
+using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
-using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -10,15 +9,15 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public InvoicesController(ApplicationDbContext context)
+        private readonly IInvoiceRepository _invoiceRepository;
+        public InvoicesController(IInvoiceRepository invoiceRepository )
         {
-            _context = context;
+            _invoiceRepository = invoiceRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllInvoices()
         {
-            var invoices = await _context.Invoices.ToListAsync();
+            var invoices = await _invoiceRepository.GetAllAsync();
             var responses = new List<InvoiceResponseDto>();
             foreach (var invoice in invoices)
             {
@@ -47,7 +46,7 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
+            var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
             return Ok(new InvoiceResponseDto
@@ -83,8 +82,8 @@ namespace FreelanceManager.API.Controllers
                 TotalAmount = 0,
                 ClientId = dto.ClientId
             };
-            await _context.Invoices.AddAsync(invoice);
-            await _context.SaveChangesAsync();
+            await _invoiceRepository.AddAsync(invoice);
+            await _invoiceRepository.SaveChangesAsync();
 
             var response = new InvoiceResponseDto
             {
@@ -106,13 +105,14 @@ namespace FreelanceManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateInvoice(int id, [FromBody] UpdateInvoiceDto dto)
         {
-            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
+            var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
             invoice.DueDate = dto.DueDate;
             invoice.Status = dto.Status;
             invoice.Notes = dto.Notes;
-            await _context.SaveChangesAsync();
+            _invoiceRepository.Update(invoice);
+            await _invoiceRepository.SaveChangesAsync();
             return Ok(new InvoiceResponseDto
             {
                 Id = invoice.Id,
@@ -132,11 +132,11 @@ namespace FreelanceManager.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = await _context.Invoices.FirstOrDefaultAsync(I => I.Id == id);
+            var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+            _invoiceRepository.Delete(invoice);
+            await _invoiceRepository.SaveChangesAsync();
             return NoContent();
         }
 
