@@ -1,8 +1,7 @@
 using FreelanceManager.Core.DTOs.Client;
+using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
-using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -10,17 +9,17 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public ClientsController(ApplicationDbContext context)
+        private readonly IClientRepository _clientRepository;
+        public ClientsController(IClientRepository clientRepository)
         {
-            _context = context;
+            _clientRepository = clientRepository;
 
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllClients()
         {
-            var clients = await _context.Clients.ToListAsync();
+            var clients = await _clientRepository.GetAllAsync();
             var responses = new List<ClientResponseDto>();
 
             foreach (var client in clients)
@@ -45,7 +44,7 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+            var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
                 return NotFound($"Client with ID {id} not found");
             return Ok(new ClientResponseDto
@@ -76,8 +75,8 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = DateTime.UtcNow
 
             };
-            await _context.Clients.AddAsync(client);
-            await _context.SaveChangesAsync();
+            await _clientRepository.AddAsync(client);
+            await _clientRepository.SaveChangesAsync();
 
             var response = new ClientResponseDto
             {
@@ -98,7 +97,7 @@ namespace FreelanceManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient(int id, [FromBody] UpdateClientDto dto)
         {
-            var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+            var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
                 return NotFound($"Client with ID {id} not found");
             client.Name = dto.Name;
@@ -106,7 +105,8 @@ namespace FreelanceManager.API.Controllers
             client.CompanyName = dto.CompanyName;
             client.Notes = dto.Notes;
             client.Phone = dto.Phone;
-            await _context.SaveChangesAsync();
+            _clientRepository.Update(client);
+            await _clientRepository.SaveChangesAsync();
 
             return Ok(new ClientResponseDto
             {
@@ -125,11 +125,11 @@ namespace FreelanceManager.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+            var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
                 return NotFound($"Client with ID {id} not found");
-            _context.Clients.Remove(client);
-            await _context.SaveChangesAsync();
+            _clientRepository.Delete(client);
+            await _clientRepository.SaveChangesAsync();
             return NoContent();
         }
 
