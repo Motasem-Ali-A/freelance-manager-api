@@ -1,8 +1,7 @@
 using FreelanceManager.Core.DTOs.Project;
+using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
-using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -10,16 +9,16 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class ProjectsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public ProjectsController(ApplicationDbContext context)
+        private readonly IProjectRepository _projectRepository;
+        public ProjectsController(IProjectRepository projectRepository)
         {
-            _context = context;
+            _projectRepository = projectRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllProjects()
         {
-            var projects = await _context.Projects.ToListAsync();
+            var projects = await _projectRepository.GetAllAsync();
             var responses = new List<ProjectResponseDto>();
             foreach (var project in projects)
             {
@@ -43,7 +42,7 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
             return Ok(new ProjectResponseDto
@@ -66,6 +65,7 @@ namespace FreelanceManager.API.Controllers
         {
             var project = new Project
             {
+                CreatedAt = DateTime.UtcNow,
                 Title = dto.Title,
                 Description = dto.Description,
                 Status = "Not started",
@@ -76,8 +76,8 @@ namespace FreelanceManager.API.Controllers
                 BillingType = dto.BillingType,
                 ClientId = dto.ClientId
             };
-            await _context.Projects.AddAsync(project);
-            await _context.SaveChangesAsync();
+            await _projectRepository.AddAsync(project);
+            await _projectRepository.SaveChangesAsync();
 
             var response = new ProjectResponseDto
             {
@@ -100,7 +100,7 @@ namespace FreelanceManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
             project.Title = dto.Title;
@@ -110,7 +110,8 @@ namespace FreelanceManager.API.Controllers
             project.HourlyRate = dto.HourlyRate;
             project.FixedPrice = dto.FixedPrice;
 
-            await _context.SaveChangesAsync();
+            _projectRepository.Update(project);
+            await _projectRepository.SaveChangesAsync();
             return Ok(new ProjectResponseDto
             {
                 Id = project.Id,
@@ -130,11 +131,11 @@ namespace FreelanceManager.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
-            _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
+            _projectRepository.Delete(project);
+            await _projectRepository.SaveChangesAsync();
             return NoContent();
         }
 
