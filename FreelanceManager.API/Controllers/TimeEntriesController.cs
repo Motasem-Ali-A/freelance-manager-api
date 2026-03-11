@@ -1,8 +1,8 @@
 using FreelanceManager.Core.DTOs.TimeEntry;
+using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
-using FreelanceManager.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace FreelanceManager.API.Controllers
 {
@@ -10,15 +10,15 @@ namespace FreelanceManager.API.Controllers
     [ApiController]
     public class TimeEntriesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public TimeEntriesController(ApplicationDbContext context)
+        private readonly ITimeEntryRepository _timeEntryRepository;
+        public TimeEntriesController(ITimeEntryRepository timeEntryRepository)
         {
-            _context = context;
+            _timeEntryRepository = timeEntryRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var timeEntries = await _context.TimeEntries.ToListAsync();
+            var timeEntries = await _timeEntryRepository.GetAllAsync();
             var responses = new List<TimeEntryResponseDto>();
             foreach (var timeEntry in timeEntries)
             {
@@ -38,7 +38,7 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
+            var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
             return Ok(new TimeEntryResponseDto
@@ -62,8 +62,8 @@ namespace FreelanceManager.API.Controllers
                 Description = dto.Description,
                 ProjectId = dto.ProjectId
             };
-            await _context.TimeEntries.AddAsync(timeEntry);
-            await _context.SaveChangesAsync();
+            await _timeEntryRepository.AddAsync(timeEntry);
+            await _timeEntryRepository.SaveChangesAsync();
             var response = new TimeEntryResponseDto
             {
                 Id = timeEntry.Id,
@@ -78,13 +78,13 @@ namespace FreelanceManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryDto dto)
         {
-            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
+            var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
             timeEntry.HoursWorked = dto.HoursWorked;
             timeEntry.Description = dto.Description;
-
-            await _context.SaveChangesAsync();
+            _timeEntryRepository.Update(timeEntry);
+            await _timeEntryRepository.SaveChangesAsync();
             return Ok(new TimeEntryResponseDto
             {
                 Id = timeEntry.Id,
@@ -98,11 +98,11 @@ namespace FreelanceManager.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTimeEntry(int id)
         {
-            var timeEntry = await _context.TimeEntries.FirstOrDefaultAsync(t => t.Id == id);
+            var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
                 return NotFound($"Time Entry with ID {id} Not Found");
-            _context.TimeEntries.Remove(timeEntry);
-            await _context.SaveChangesAsync();
+            _timeEntryRepository.Delete(timeEntry);
+            await _timeEntryRepository.SaveChangesAsync();
             return NoContent();
         }
 
