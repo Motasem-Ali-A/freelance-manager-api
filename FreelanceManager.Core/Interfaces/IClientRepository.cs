@@ -3,6 +3,6 @@ namespace FreelanceManager.Core.interfaces
 {
     public interface IClientRepository : IRepository<Client>
     {
-        Task<Client?> GetClientWithProjectsAsync(int Id);
+        Task<Client?> GetClientWithProjectsAsync(int id);
     }
 }
