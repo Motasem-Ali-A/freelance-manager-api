@@ -1,4 +1,5 @@
 using FreelanceManager.Core.DTOs.Auth;
+using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,11 @@ namespace FreelanceManager.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        public AuthController(UserManager<AppUser> userManager)
+        private readonly ITokenService _tokenService;
+        public AuthController(UserManager<AppUser> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService= tokenService;
         }
 
         [HttpPost("register")]
@@ -47,7 +50,7 @@ namespace FreelanceManager.API.Controllers
             {
                 Email = user.Email ?? string.Empty,
                 FullName = user.FullName,
-                Token = ""
+                Token = _tokenService.CreateToken(user)
             });
         }
 
