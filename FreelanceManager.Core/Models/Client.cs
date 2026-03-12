@@ -21,6 +21,8 @@ namespace FreelanceManager.Core.Models
         public string Notes { get; set; } = string.Empty;
         public ICollection<Project> Projects { get; set; } = new List<Project>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public string UserId { get; set; } = string.Empty;
+        public AppUser User { get; set; } = null!;
 
     }
 }

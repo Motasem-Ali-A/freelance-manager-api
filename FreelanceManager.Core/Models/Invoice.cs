@@ -21,5 +21,7 @@ namespace FreelanceManager.Core.Models
         public int ClientId { get; set; }
         public Client Client { get; set; } = null!;
         public ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
+        public string UserId { get; set; } = string.Empty;
+        public AppUser User { get; set; } = null!;
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Client;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -21,7 +22,10 @@ namespace FreelanceManager.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllClients()
         {
-            var clients = await _clientRepository.GetAllAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+            var clients = await _clientRepository.GetAllByUserIdAsync(userId);
             var responses = new List<ClientResponseDto>();
 
             foreach (var client in clients)

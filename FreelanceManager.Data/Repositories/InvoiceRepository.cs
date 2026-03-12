@@ -10,6 +10,10 @@ namespace FreelanceManager.Data.Repositories
         {
         }
 
+        public async Task<List<Invoice>> GetAllByUserIdAsync(string userId)
+        {
+            return await _context.Set<Invoice>().Where(i => i.UserId == userId).ToListAsync();
+        }
         public async Task<List<Invoice>> GetAllByClientIdAsync(int clientId)
         {
             return await _context.Invoices

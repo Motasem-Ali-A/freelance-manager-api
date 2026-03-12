@@ -4,5 +4,6 @@ namespace FreelanceManager.Core.interfaces
     public interface IInvoiceRepository : IRepository<Invoice>
     {
         Task<List<Invoice>> GetAllByClientIdAsync(int clientId);
+        Task<List<Invoice>> GetAllByUserIdAsync(string userId);
     }
 }

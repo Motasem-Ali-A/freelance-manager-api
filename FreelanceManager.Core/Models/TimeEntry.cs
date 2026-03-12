@@ -11,5 +11,7 @@ namespace FreelanceManager.Core.Models
         public string Description { get; set; } = string.Empty;
         public int ProjectId { get; set; }
         public Project Project { get; set; } = null!;
+        public string UserId { get; set; } = string.Empty;
+        public AppUser User { get; set; } = null!;
     }
 }

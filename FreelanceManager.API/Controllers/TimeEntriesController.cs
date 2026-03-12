@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FreelanceManager.Core.DTOs.TimeEntry;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -20,7 +21,10 @@ namespace FreelanceManager.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var timeEntries = await _timeEntryRepository.GetAllAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+            var timeEntries = await _timeEntryRepository.GetAllByUserIdAsync(userId);
             var responses = new List<TimeEntryResponseDto>();
             foreach (var timeEntry in timeEntries)
             {

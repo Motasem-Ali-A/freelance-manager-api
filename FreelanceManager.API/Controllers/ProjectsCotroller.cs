@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Project;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -20,7 +21,10 @@ namespace FreelanceManager.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProjects()
         {
-            var projects = await _projectRepository.GetAllAsync();
+             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+            var projects = await _projectRepository.GetAllByUserIdAsync(userId);
             var responses = new List<ProjectResponseDto>();
             foreach (var project in projects)
             {

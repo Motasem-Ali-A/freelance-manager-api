@@ -20,6 +20,7 @@ namespace FreelanceManager.Core.Models
         public int ClientId { get; set; }
         public Client Client { get; set; } = null!;
         public ICollection<TimeEntry> TimeEntries {get; set; }= new List<TimeEntry>();
-        
+        public string UserId { get; set; } = string.Empty;
+        public AppUser User { get; set; } = null!;
     }
 }
