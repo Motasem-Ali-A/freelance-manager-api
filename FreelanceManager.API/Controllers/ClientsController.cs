@@ -1,12 +1,14 @@
 using FreelanceManager.Core.DTOs.Client;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreelanceManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClientsController : ControllerBase
     {
         private readonly IClientRepository _clientRepository;

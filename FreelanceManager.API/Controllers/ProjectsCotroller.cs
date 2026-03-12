@@ -1,12 +1,14 @@
 using FreelanceManager.Core.DTOs.Project;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreelanceManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectRepository _projectRepository;

@@ -1,6 +1,7 @@
 using FreelanceManager.Core.DTOs.TimeEntry;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -8,6 +9,7 @@ namespace FreelanceManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TimeEntriesController : ControllerBase
     {
         private readonly ITimeEntryRepository _timeEntryRepository;
