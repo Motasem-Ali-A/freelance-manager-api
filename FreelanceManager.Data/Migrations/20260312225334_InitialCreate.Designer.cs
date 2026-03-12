@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260312220741_AddIdentity")]
-    partial class AddIdentity
+    [Migration("20260312225334_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,35 +134,15 @@ namespace FreelanceManager.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.HasIndex("UserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "123 Main St, New York",
-                            CompanyName = "Acme Corp",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "john@acme.com",
-                            Name = "John Smith",
-                            Notes = "Long term client",
-                            Phone = "123-456-7890",
-                            Status = "Active"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "456 Market St, London",
-                            CompanyName = "Globex",
-                            CreatedAt = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "sara@globex.com",
-                            Name = "Sara Jones",
-                            Notes = "",
-                            Phone = "987-654-3210",
-                            Status = "Active"
-                        });
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.Invoice", b =>
@@ -214,43 +194,17 @@ namespace FreelanceManager.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Invoices");
+                    b.HasIndex("UserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClientId = 1,
-                            CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DueDate = new DateTime(2026, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            InvoiceNumber = "INV-0001",
-                            IssueDate = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Notes = "Payment via bank transfer",
-                            Status = "Sent",
-                            Subtotal = 400m,
-                            TaxAmount = 60m,
-                            TaxRate = 0.15m,
-                            TotalAmount = 460m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ClientId = 2,
-                            CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DueDate = new DateTime(2026, 2, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            InvoiceNumber = "INV-0002",
-                            IssueDate = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Notes = "",
-                            Status = "Draft",
-                            Subtotal = 1500m,
-                            TaxAmount = 225m,
-                            TaxRate = 0.15m,
-                            TotalAmount = 1725m
-                        });
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.InvoiceItem", b =>
@@ -283,26 +237,6 @@ namespace FreelanceManager.Data.Migrations
                     b.HasIndex("InvoiceId");
 
                     b.ToTable("InvoiceItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Frontend Development - 8hrs",
-                            InvoiceId = 1,
-                            Quantity = 1,
-                            Total = 400m,
-                            UnitPrice = 400m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Website Redesign - Fixed Price",
-                            InvoiceId = 2,
-                            Quantity = 1,
-                            Total = 1500m,
-                            UnitPrice = 1500m
-                        });
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.Project", b =>
@@ -351,41 +285,17 @@ namespace FreelanceManager.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Projects");
+                    b.HasIndex("UserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BillingType = "Hourly",
-                            ClientId = 1,
-                            CreatedAt = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Build a full e-commerce website",
-                            EndDate = new DateTime(2026, 3, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FixedPrice = 0m,
-                            HourlyRate = 50m,
-                            StartDate = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = "InProgress",
-                            Title = "E-commerce Website"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BillingType = "Fixed",
-                            ClientId = 2,
-                            CreatedAt = new DateTime(2026, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Modern website redesign",
-                            EndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FixedPrice = 1500m,
-                            HourlyRate = 0m,
-                            StartDate = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = "NotStarted",
-                            Title = "Website Redesign"
-                        });
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.TimeEntry", b =>
@@ -412,31 +322,17 @@ namespace FreelanceManager.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("TimeEntries");
+                    b.HasIndex("UserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Built login page",
-                            HoursWorked = 5m,
-                            ProjectId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Built navigation bar",
-                            HoursWorked = 3m,
-                            ProjectId = 1
-                        });
+                    b.ToTable("TimeEntries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -567,6 +463,17 @@ namespace FreelanceManager.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FreelanceManager.Core.Models.Client", b =>
+                {
+                    b.HasOne("FreelanceManager.Core.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FreelanceManager.Core.Models.Invoice", b =>
                 {
                     b.HasOne("FreelanceManager.Core.Models.Client", "Client")
@@ -575,7 +482,15 @@ namespace FreelanceManager.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FreelanceManager.Core.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.InvoiceItem", b =>
@@ -597,7 +512,15 @@ namespace FreelanceManager.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FreelanceManager.Core.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FreelanceManager.Core.Models.TimeEntry", b =>
@@ -608,7 +531,15 @@ namespace FreelanceManager.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FreelanceManager.Core.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Project");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
