@@ -1,4 +1,5 @@
 using FreelanceManager.Core.interfaces;
+using FreelanceManager.Core.Models;
 using FreelanceManager.Data;
 using FreelanceManager.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,10 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<AppUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,6 +27,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapIdentityApi<AppUser>();
 
 app.UseHttpsRedirection();
 
