@@ -1,8 +1,10 @@
 using FreelanceManager.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 namespace FreelanceManager.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -76,7 +78,7 @@ namespace FreelanceManager.Data
                 }
             );
 
-            
+
             modelBuilder.Entity<TimeEntry>().HasData(
                 new TimeEntry
                 {
