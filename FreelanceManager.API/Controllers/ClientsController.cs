@@ -40,7 +40,7 @@ namespace FreelanceManager.API.Controllers
                     Address = client.Address,
                     Notes = client.Notes,
                     Status = client.Status,
-                    CreatedAt = client.CreatedAt
+                    CreatedAt = client.CreatedAt,
                 });
             }
 
@@ -69,6 +69,9 @@ namespace FreelanceManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddClient([FromBody] CreateClientDto dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
             var client = new Client
             {
                 Name = dto.Name,
@@ -78,7 +81,8 @@ namespace FreelanceManager.API.Controllers
                 Address = dto.Address,
                 Notes = dto.Notes,
                 Status = "Active",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId
 
             };
             await _clientRepository.AddAsync(client);
