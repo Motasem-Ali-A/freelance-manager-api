@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Project;
+using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -34,12 +35,12 @@ namespace FreelanceManager.API.Controllers
                     CreatedAt = project.CreatedAt,
                     Title = project.Title,
                     Description = project.Description,
-                    Status = project.Status,
+                    Status = project.Status.ToString(),
                     StartDate = project.StartDate,
                     EndDate = project.EndDate,
                     HourlyRate = project.HourlyRate,
                     FixedPrice = project.FixedPrice,
-                    BillingType = project.BillingType,
+                    BillingType = project.BillingType.ToString(),
                     ClientId = project.ClientId
                 });
             }
@@ -57,12 +58,12 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = project.CreatedAt,
                 Title = project.Title,
                 Description = project.Description,
-                Status = project.Status,
+                Status = project.Status.ToString(),
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
                 FixedPrice = project.FixedPrice,
-                BillingType = project.BillingType,
+                BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
             });
         }
@@ -74,12 +75,12 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = DateTime.UtcNow,
                 Title = dto.Title,
                 Description = dto.Description,
-                Status = "Not started",
+                Status = ProjectStatus.NotStarted,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 HourlyRate = dto.HourlyRate,
                 FixedPrice = dto.FixedPrice,
-                BillingType = dto.BillingType,
+                BillingType = Enum.Parse<BillingType>(dto.BillingType),
                 ClientId = dto.ClientId
             };
             await _projectRepository.AddAsync(project);
@@ -91,12 +92,12 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = project.CreatedAt,
                 Title = project.Title,
                 Description = project.Description,
-                Status = project.Status,
+                Status = project.Status.ToString(),
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
                 FixedPrice = project.FixedPrice,
-                BillingType = project.BillingType,
+                BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
             };
 
@@ -111,7 +112,7 @@ namespace FreelanceManager.API.Controllers
                 return NotFound($"Project with ID {id} not found");
             project.Title = dto.Title;
             project.Description = dto.Description;
-            project.Status = dto.Status;
+            project.Status = Enum.Parse<ProjectStatus>(dto.Status);
             project.EndDate = dto.EndDate;
             project.HourlyRate = dto.HourlyRate;
             project.FixedPrice = dto.FixedPrice;
@@ -124,12 +125,12 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = project.CreatedAt,
                 Title = project.Title,
                 Description = project.Description,
-                Status = project.Status,
+                Status = project.Status.ToString(),
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
                 FixedPrice = project.FixedPrice,
-                BillingType = project.BillingType,
+                BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
             });
         }

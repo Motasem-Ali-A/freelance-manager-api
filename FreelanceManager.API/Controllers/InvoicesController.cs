@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Invoice;
+using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +37,7 @@ namespace FreelanceManager.API.Controllers
                         InvoiceNumber = invoice.InvoiceNumber,
                         IssueDate = invoice.IssueDate,
                         DueDate = invoice.DueDate,
-                        Status = invoice.Status,
+                        Status = invoice.Status.ToString(),
                         Notes = invoice.Notes,
                         Subtotal = invoice.Subtotal,
                         TaxRate = invoice.TaxRate,
@@ -62,7 +63,7 @@ namespace FreelanceManager.API.Controllers
                 InvoiceNumber = invoice.InvoiceNumber,
                 IssueDate = invoice.IssueDate,
                 DueDate = invoice.DueDate,
-                Status = invoice.Status,
+                Status = invoice.Status.ToString(),
                 Notes = invoice.Notes,
                 Subtotal = invoice.Subtotal,
                 TaxRate = invoice.TaxRate,
@@ -80,7 +81,7 @@ namespace FreelanceManager.API.Controllers
                 InvoiceNumber = "",
                 IssueDate = dto.IssueDate,
                 DueDate = dto.DueDate,
-                Status = "Draft",
+                Status = InvoiceStatus.Draft,
                 Notes = dto.Notes,
                 Subtotal = 0,
                 TaxRate = dto.TaxRate,
@@ -98,7 +99,7 @@ namespace FreelanceManager.API.Controllers
                 InvoiceNumber = invoice.InvoiceNumber,
                 IssueDate = invoice.IssueDate,
                 DueDate = invoice.DueDate,
-                Status = invoice.Status,
+                Status = invoice.Status.ToString(),
                 Notes = invoice.Notes,
                 Subtotal = invoice.Subtotal,
                 TaxRate = invoice.TaxRate,
@@ -115,7 +116,7 @@ namespace FreelanceManager.API.Controllers
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
             invoice.DueDate = dto.DueDate;
-            invoice.Status = dto.Status;
+            invoice.Status = Enum.Parse<InvoiceStatus>(dto.Status);
             invoice.Notes = dto.Notes;
             _invoiceRepository.Update(invoice);
             await _invoiceRepository.SaveChangesAsync();
@@ -126,7 +127,7 @@ namespace FreelanceManager.API.Controllers
                 InvoiceNumber = invoice.InvoiceNumber,
                 IssueDate = invoice.IssueDate,
                 DueDate = invoice.DueDate,
-                Status = invoice.Status,
+                Status = invoice.Status.ToString(),
                 Notes = invoice.Notes,
                 Subtotal = invoice.Subtotal,
                 TaxRate = invoice.TaxRate,

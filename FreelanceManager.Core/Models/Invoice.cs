@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FreelanceManager.Core.Enums;
 
 namespace FreelanceManager.Core.Models
 {
@@ -10,8 +11,7 @@ namespace FreelanceManager.Core.Models
         public string InvoiceNumber { get; set; } = string.Empty;
         public DateTime IssueDate { get; set; }
         public DateTime DueDate { get; set; }
-        [MaxLength(50)]
-        public string Status { get; set; } = string.Empty;
+        public InvoiceStatus Status { get; set; }
         [MaxLength(500)]
         public string Notes { get; set; } = string.Empty;
         public decimal Subtotal { get; set; }
