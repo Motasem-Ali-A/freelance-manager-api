@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260312225334_InitialCreate")]
+    [Migration("20260315181152_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -173,10 +173,8 @@ namespace FreelanceManager.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Subtotal")
                         .HasPrecision(18, 2)
@@ -245,10 +243,8 @@ namespace FreelanceManager.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("BillingType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("BillingType")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("INTEGER");
@@ -275,10 +271,8 @@ namespace FreelanceManager.Data.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
