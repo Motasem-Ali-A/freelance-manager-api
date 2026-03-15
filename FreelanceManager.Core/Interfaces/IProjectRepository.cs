@@ -5,5 +5,6 @@ namespace FreelanceManager.Core.interfaces
     {
         Task<List<Project>> GetAllByClientIdAsync(int clientId);
         Task<List<Project>> GetAllByUserIdAsync(string userId);
+        Task <Project?> GetProjectWithTimeEntriesAsync(int id);
     }
 }

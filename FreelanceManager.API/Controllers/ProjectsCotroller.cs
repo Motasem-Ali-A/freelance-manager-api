@@ -14,9 +14,11 @@ namespace FreelanceManager.API.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectRepository _projectRepository;
-        public ProjectsController(IProjectRepository projectRepository)
+        private readonly IProjectService _projectService;
+        public ProjectsController(IProjectRepository projectRepository , IProjectService projectService)
         {
             _projectRepository = projectRepository;
+            _projectService = projectService;
         }
 
         [HttpGet]
@@ -49,9 +51,10 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var project = await _projectRepository.GetByIdAsync(id);
+            var project = await _projectRepository.GetProjectWithTimeEntriesAsync(id);
             if (project == null)
                 return NotFound($"Project with ID {id} not found");
+            
             return Ok(new ProjectResponseDto
             {
                 Id = project.Id,
@@ -62,6 +65,7 @@ namespace FreelanceManager.API.Controllers
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
+                HourlyTotal = _projectService.CalculateHourlyTotal(project,project.TimeEntries.ToList()),
                 FixedPrice = project.FixedPrice,
                 BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
@@ -96,6 +100,7 @@ namespace FreelanceManager.API.Controllers
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
+                HourlyTotal = 0,
                 FixedPrice = project.FixedPrice,
                 BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
@@ -129,6 +134,7 @@ namespace FreelanceManager.API.Controllers
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
+                HourlyTotal = 0,
                 FixedPrice = project.FixedPrice,
                 BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId

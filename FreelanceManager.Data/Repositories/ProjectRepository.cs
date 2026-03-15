@@ -21,5 +21,11 @@ namespace FreelanceManager.Data.Repositories
                 .Where(p => p.ClientId == clientId)
                 .ToListAsync();
         }
+        public async Task<Project?> GetProjectWithTimeEntriesAsync(int id)
+        {
+            return await _context.Projects
+                .Include(p => p.TimeEntries)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
     }
 }
