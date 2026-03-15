@@ -14,18 +14,21 @@ namespace FreelanceManager.API.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly IInvoiceRepository _invoiceRepository;
-        public InvoicesController(IInvoiceRepository invoiceRepository )
+        private readonly IInvoiceService _invoiceService;
+        public InvoicesController(IInvoiceRepository invoiceRepository, IInvoiceService invoiceService)
         {
             _invoiceRepository = invoiceRepository;
+            _invoiceService = invoiceService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllInvoices()
         {
-             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
             var invoices = await _invoiceRepository.GetAllByUserIdAsync(userId);
             var responses = new List<InvoiceResponseDto>();
+            _invoiceService.ApplyOverdueStatus(invoices);
             foreach (var invoice in invoices)
             {
                 responses.Add
@@ -53,9 +56,11 @@ namespace FreelanceManager.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
                 return NotFound($"Invoice with ID {id} Not Found");
+            _invoiceService.ApplyOverdueStatus(new List<Invoice> { invoice });
             return Ok(new InvoiceResponseDto
             {
                 Id = invoice.Id,
@@ -75,10 +80,13 @@ namespace FreelanceManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddInvoice([FromBody] CreateInvoiceDto dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
             var invoice = new Invoice
             {
                 CreatedAt = DateTime.UtcNow,
-                InvoiceNumber = "",
+                InvoiceNumber = await _invoiceService.GenerateInvoiceNumberAsync(userId),
                 IssueDate = dto.IssueDate,
                 DueDate = dto.DueDate,
                 Status = InvoiceStatus.Draft,
@@ -87,10 +95,14 @@ namespace FreelanceManager.API.Controllers
                 TaxRate = dto.TaxRate,
                 TaxAmount = 0,
                 TotalAmount = 0,
-                ClientId = dto.ClientId
+                ClientId = dto.ClientId,
+                UserId = userId
+
             };
             await _invoiceRepository.AddAsync(invoice);
+            _invoiceService.CalculateTotals(invoice);
             await _invoiceRepository.SaveChangesAsync();
+
 
             var response = new InvoiceResponseDto
             {
