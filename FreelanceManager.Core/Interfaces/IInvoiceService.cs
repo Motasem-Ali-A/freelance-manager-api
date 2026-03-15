@@ -6,5 +6,6 @@ namespace FreelanceManager.Core.interfaces
     {
         Task<string> GenerateInvoiceNumberAsync(string userId);
         void  CalculateTotals(Invoice invoice);
+        void ApplyOverdueStatus(List<Invoice> invoices);
     }
 }
