@@ -3,8 +3,7 @@ namespace FreelanceManager.Core.interfaces
 {
     public interface IProjectRepository : IRepository<Project>
     {
-        Task<List<Project>> GetAllByClientIdAsync(int clientId);
-        Task<List<Project>> GetAllByUserIdAsync(string userId);
-        Task <Project?> GetProjectWithTimeEntriesAsync(int id);
+        Task<List<Project>> GetAllByUserIdAsync(string userId, int? clientId, string? status, string? billingType);
+        Task<Project?> GetProjectWithTimeEntriesAsync(int id);
     }
 }

@@ -16,19 +16,19 @@ namespace FreelanceManager.API.Controllers
     {
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectService _projectService;
-        public ProjectsController(IProjectRepository projectRepository , IProjectService projectService)
+        public ProjectsController(IProjectRepository projectRepository, IProjectService projectService)
         {
             _projectRepository = projectRepository;
             _projectService = projectService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects([FromQuery] string? billingType, [FromQuery] string? status, [FromBody] int? clientId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var projects = await _projectRepository.GetAllByUserIdAsync(userId);
+            var projects = await _projectRepository.GetAllByUserIdAsync(userId, clientId, status, billingType);
             var responses = new List<ProjectResponseDto>();
             foreach (var project in projects)
             {
@@ -55,7 +55,7 @@ namespace FreelanceManager.API.Controllers
             var project = await _projectRepository.GetProjectWithTimeEntriesAsync(id);
             if (project == null)
                 throw new NotFoundException($"Project with ID {id} not found");
-            
+
             return Ok(new ProjectResponseDto
             {
                 Id = project.Id,
@@ -66,7 +66,7 @@ namespace FreelanceManager.API.Controllers
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 HourlyRate = project.HourlyRate,
-                HourlyTotal = _projectService.CalculateHourlyTotal(project,project.TimeEntries.ToList()),
+                HourlyTotal = _projectService.CalculateHourlyTotal(project, project.TimeEntries.ToList()),
                 FixedPrice = project.FixedPrice,
                 BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
