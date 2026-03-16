@@ -22,12 +22,12 @@ namespace FreelanceManager.API.Controllers
             _invoiceService = invoiceService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllInvoices()
+        public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] string? status)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var invoices = await _invoiceRepository.GetAllByUserIdAsync(userId);
+            var invoices = await _invoiceRepository.GetAllByUserIdAsync(userId, from, to, status);
             var responses = new List<InvoiceResponseDto>();
             _invoiceService.ApplyOverdueStatus(invoices);
             foreach (var invoice in invoices)
