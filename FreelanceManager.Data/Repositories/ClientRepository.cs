@@ -18,9 +18,16 @@ namespace FreelanceManager.Data.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<List<Client>> GetAllByUserIdAsync(string userId)
+        public async Task<List<Client>> GetAllByUserIdAsync(string userId, string? status = null, string? search = null)
         {
-            return await _context.Set<Client>().Where(c => c.UserId == userId).ToListAsync();
+            var query = _context.Clients.Where(c => c.UserId ==userId);
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(c => c.Status == status);
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(c => c.Name.Contains(search) || c.CompanyName.Contains(search));
+
+            return await query.ToListAsync();
         }
         
     }

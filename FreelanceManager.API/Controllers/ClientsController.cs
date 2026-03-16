@@ -21,12 +21,13 @@ namespace FreelanceManager.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllClients()
+        public async Task<IActionResult> GetAllClients([FromQuery] string? status,
+            [FromQuery] string? search)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var clients = await _clientRepository.GetAllByUserIdAsync(userId);
+            var clients = await _clientRepository.GetAllByUserIdAsync(userId, status, search);
             var responses = new List<ClientResponseDto>();
 
             foreach (var client in clients)
