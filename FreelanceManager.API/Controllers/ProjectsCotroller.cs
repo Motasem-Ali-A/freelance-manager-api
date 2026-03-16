@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Project;
 using FreelanceManager.Core.Enums;
+using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ namespace FreelanceManager.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProjects()
         {
-             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
             var projects = await _projectRepository.GetAllByUserIdAsync(userId);
@@ -53,7 +54,7 @@ namespace FreelanceManager.API.Controllers
         {
             var project = await _projectRepository.GetProjectWithTimeEntriesAsync(id);
             if (project == null)
-                return NotFound($"Project with ID {id} not found");
+                throw new NotFoundException($"Project with ID {id} not found");
             
             return Ok(new ProjectResponseDto
             {
@@ -74,6 +75,9 @@ namespace FreelanceManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProject([FromBody] CreateProjectDto dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
             var project = new Project
             {
                 CreatedAt = DateTime.UtcNow,
@@ -114,7 +118,7 @@ namespace FreelanceManager.API.Controllers
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                return NotFound($"Project with ID {id} not found");
+                throw new NotFoundException($"Project with ID {id} not found");
             project.Title = dto.Title;
             project.Description = dto.Description;
             project.Status = Enum.Parse<ProjectStatus>(dto.Status);
@@ -146,7 +150,7 @@ namespace FreelanceManager.API.Controllers
         {
             var project = await _projectRepository.GetByIdAsync(id);
             if (project == null)
-                return NotFound($"Project with ID {id} not found");
+                throw new NotFoundException($"Project with ID {id} not found");
             _projectRepository.Delete(project);
             await _projectRepository.SaveChangesAsync();
             return NoContent();

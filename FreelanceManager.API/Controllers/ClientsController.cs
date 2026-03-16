@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Client;
+using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -52,7 +53,7 @@ namespace FreelanceManager.API.Controllers
         {
             var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
-                return NotFound($"Client with ID {id} not found");
+                throw new NotFoundException($"Client with ID {id} not found");
             return Ok(new ClientResponseDto
             {
                 Id = client.Id,
@@ -109,7 +110,7 @@ namespace FreelanceManager.API.Controllers
         {
             var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
-                return NotFound($"Client with ID {id} not found");
+                throw new NotFoundException($"Client with ID {id} not found");
             client.Name = dto.Name;
             client.Address = dto.Address;
             client.CompanyName = dto.CompanyName;
@@ -137,7 +138,7 @@ namespace FreelanceManager.API.Controllers
         {
             var client = await _clientRepository.GetByIdAsync(id);
             if (client == null)
-                return NotFound($"Client with ID {id} not found");
+                throw new NotFoundException($"Client with ID {id} not found");
             _clientRepository.Delete(client);
             await _clientRepository.SaveChangesAsync();
             return NoContent();

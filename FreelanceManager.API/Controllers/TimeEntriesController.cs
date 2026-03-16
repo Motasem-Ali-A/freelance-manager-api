@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.TimeEntry;
+using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +47,7 @@ namespace FreelanceManager.API.Controllers
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
-                return NotFound($"Time Entry with ID {id} Not Found");
+                throw new NotFoundException($"Time Entry with ID {id} Not Found");
             return Ok(new TimeEntryResponseDto
             {
                 Id = timeEntry.Id,
@@ -60,6 +61,9 @@ namespace FreelanceManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTimeEntry([FromBody] CreateTimeEntryDto dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
             var timeEntry = new TimeEntry
             {
                 CreatedAt = DateTime.UtcNow,
@@ -86,7 +90,7 @@ namespace FreelanceManager.API.Controllers
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
-                return NotFound($"Time Entry with ID {id} Not Found");
+                throw new NotFoundException($"Time Entry with ID {id} Not Found");
             timeEntry.HoursWorked = dto.HoursWorked;
             timeEntry.Description = dto.Description;
             _timeEntryRepository.Update(timeEntry);
@@ -106,7 +110,7 @@ namespace FreelanceManager.API.Controllers
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
             if (timeEntry == null)
-                return NotFound($"Time Entry with ID {id} Not Found");
+                throw new NotFoundException($"Time Entry with ID {id} Not Found");
             _timeEntryRepository.Delete(timeEntry);
             await _timeEntryRepository.SaveChangesAsync();
             return NoContent();

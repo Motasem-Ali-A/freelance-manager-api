@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FreelanceManager.Core.DTOs.Invoice;
 using FreelanceManager.Core.Enums;
+using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +60,7 @@ namespace FreelanceManager.API.Controllers
 
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
-                return NotFound($"Invoice with ID {id} Not Found");
+                throw new NotFoundException($"Invoice with ID {id} Not Found");
             _invoiceService.ApplyOverdueStatus(new List<Invoice> { invoice });
             return Ok(new InvoiceResponseDto
             {
@@ -126,7 +127,7 @@ namespace FreelanceManager.API.Controllers
         {
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
-                return NotFound($"Invoice with ID {id} Not Found");
+                throw new NotFoundException($"Invoice with ID {id} Not Found");
             invoice.DueDate = dto.DueDate;
             invoice.Status = Enum.Parse<InvoiceStatus>(dto.Status);
             invoice.Notes = dto.Notes;
@@ -153,7 +154,7 @@ namespace FreelanceManager.API.Controllers
         {
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice == null)
-                return NotFound($"Invoice with ID {id} Not Found");
+                throw new NotFoundException($"Invoice with ID {id} Not Found");
             _invoiceRepository.Delete(invoice);
             await _invoiceRepository.SaveChangesAsync();
             return NoContent();
