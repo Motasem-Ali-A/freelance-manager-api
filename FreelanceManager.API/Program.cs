@@ -1,4 +1,5 @@
 using System.Text;
+using FreelanceManager.API.Middleware;
 using FreelanceManager.API.Services;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -80,7 +81,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapIdentityApi<AppUser>();
