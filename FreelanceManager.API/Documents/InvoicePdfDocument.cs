@@ -45,7 +45,19 @@ namespace FreelanceManager.API.Documents
                 });
             });
         }
-        private void ComposeContent(IContainer container) { }
+        private void ComposeContent(IContainer container)
+        {
+            container.Row(row =>
+            {
+                //Business info
+                row.RelativeItem().Column(column =>
+                {
+                    column.Item().Text("Bill To: ").FontSize(20).Bold();
+                    column.Item().Text(_invoice.Client.Name);
+                    column.Item().Text(_invoice.Client.Email);
+                });
+            });
+        }
         private void ComposeFooter(IContainer container) { }
     }
 }
