@@ -27,22 +27,22 @@ namespace FreelanceManager.API.Documents
         }
         private void ComposeHeader(IContainer container)
         {
-            container.Row(row =>
+            container.Background("#2C3E50").Padding(20).Row(row =>
             {
                 //Business info
                 row.RelativeItem().Column(column =>
                 {
-                    column.Item().Text(_user.BusinessName).FontSize(20).Bold();
-                    column.Item().Text(_user.Email);
+                    column.Item().Text(_user.BusinessName).FontSize(20).Bold().FontColor("#FFFFFF");
+                    column.Item().Text(_user.Email ?? "").FontColor("#FFFFFF");
                 });
 
                 //Invoice details
                 row.ConstantItem(150).Column(column =>
                 {
-                    column.Item().Text("INVOICE").FontSize(20).Bold().AlignRight();
-                    column.Item().Text(_invoice.InvoiceNumber).AlignRight();
-                    column.Item().Text($"Issued: {_invoice.IssueDate:dd/MM/yyyy}").AlignRight();
-                    column.Item().Text($"Due: {_invoice.DueDate:dd/MM/yyyy}").AlignRight();
+                    column.Item().Text("INVOICE").FontSize(20).Bold().FontColor("#FFFFFF").AlignRight();
+                    column.Item().Text(_invoice.InvoiceNumber).FontColor("#FFFFFF").AlignRight();
+                    column.Item().Text($"Issued: {_invoice.IssueDate:dd/MM/yyyy}").FontColor("#FFFFFF").AlignRight();
+                    column.Item().Text($"Due: {_invoice.DueDate:dd/MM/yyyy}").FontColor("#FFFFFF").AlignRight();
                 });
             });
         }
@@ -53,13 +53,15 @@ namespace FreelanceManager.API.Documents
                 //Bill To section
                 row.RelativeItem().Column(column =>
                 {
-                    column.Item().Text("Bill To: ").FontSize(20).Bold();
+                    column.Item().Text("Bill To:").FontSize(14).Bold();
                     column.Item().Text(_invoice.Client.Name);
-                    column.Item().Text(_invoice.Client.Email);
+                    column.Item().Text(_invoice.Client.Email ?? "");
 
                     column.Item().PaddingTop(20);
                     // Items table
                     column.Item().Element(ComposeTable);
+
+                    column.Item().PaddingTop(10);
                     // Totals
                     column.Item().Element(ComposeTotals);
                 });
@@ -80,18 +82,18 @@ namespace FreelanceManager.API.Documents
                 });
                 table.Header(header =>
                 {
-                    header.Cell().Text("Description").Bold();
-                    header.Cell().Text("Qty").Bold();
-                    header.Cell().Text("Unit Price").Bold();
-                    header.Cell().Text("Total").Bold();
+                    header.Cell().Background("#2C3E50").Padding(5).Text("Description").Bold().FontColor("#FFFFFF");
+                    header.Cell().Background("#2C3E50").Padding(5).Text("Qty").Bold().FontColor("#FFFFFF");
+                    header.Cell().Background("#2C3E50").Padding(5).Text("Unit Price").Bold().FontColor("#FFFFFF");
+                    header.Cell().Background("#2C3E50").Padding(5).Text("Total").Bold().FontColor("#FFFFFF");
                 });
 
                 foreach (var item in _invoice.InvoiceItems)
                 {
-                    table.Cell().Text(item.Description);
-                    table.Cell().Text(item.Quantity.ToString());
-                    table.Cell().Text($"${item.UnitPrice}");
-                    table.Cell().Text($"${item.Total}");
+                    table.Cell().BorderBottom(1).BorderColor("#DDDDDD").Padding(5).Text(item.Description);
+                    table.Cell().BorderBottom(1).BorderColor("#DDDDDD").Padding(5).Text(item.Quantity.ToString());
+                    table.Cell().BorderBottom(1).BorderColor("#DDDDDD").Padding(5).Text($"${item.UnitPrice}");
+                    table.Cell().BorderBottom(1).BorderColor("#DDDDDD").Padding(5).Text($"${item.Total}");
                 }
             });
         }
@@ -102,7 +104,7 @@ namespace FreelanceManager.API.Documents
             {
                 column.Item().Text($"Subtotal: ${_invoice.Subtotal}").AlignRight();
                 column.Item().Text($"Tax ({_invoice.TaxRate * 100}%): ${_invoice.TaxAmount}").AlignRight();
-                column.Item().Text($"Total: ${_invoice.TotalAmount}").Bold().AlignRight();
+                column.Item().Text($"Total: ${_invoice.TotalAmount}").Bold().FontSize(14).AlignRight();
             });
         }
         private void ComposeFooter(IContainer container)
