@@ -99,7 +99,8 @@ namespace FreelanceManager.API.Controllers
                 HourlyRate = dto.HourlyRate,
                 FixedPrice = dto.FixedPrice,
                 BillingType = Enum.Parse<BillingType>(dto.BillingType),
-                ClientId = dto.ClientId
+                ClientId = dto.ClientId,
+                UserId = userId
             };
             await _projectRepository.AddAsync(project);
             await _projectRepository.SaveChangesAsync();
@@ -118,6 +119,7 @@ namespace FreelanceManager.API.Controllers
                 FixedPrice = project.FixedPrice,
                 BillingType = project.BillingType.ToString(),
                 ClientId = project.ClientId
+                
             };
 
             return CreatedAtAction(nameof(GetById), new { id = project.Id }, response);

@@ -31,7 +31,7 @@ namespace FreelanceManager.API.Services
 
         public async Task<string> GenerateInvoiceNumberAsync(string userId)
         {
-            var result = (await _invoiceRepository.GetAllByUserIdAsync(userId)).Count +1;
+            var result = (await _invoiceRepository.GetAllByUserIdAsync(userId, null, null, null, 1, int.MaxValue)).TotalCount +1;
             return($"INV-{result:D4}");
         }
     }
