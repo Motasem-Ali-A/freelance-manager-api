@@ -24,7 +24,27 @@ namespace FreelanceManager.API.Documents
                 page.Footer().Element(ComposeFooter);
             });
         }
-        private void ComposeHeader(IContainer container) { }
+        private void ComposeHeader(IContainer container)
+        {
+            container.Row(row =>
+            {
+                //Business info
+                row.RelativeItem().Column(column =>
+                {
+                    column.Item().Text(_user.BusinessName).FontSize(20).Bold();
+                    column.Item().Text(_user.Email);
+                });
+
+                //Invoice details
+                row.ConstantItem(150).Column(column =>
+                {
+                    column.Item().Text("INVOICE").FontSize(20).Bold().AlignRight();
+                    column.Item().Text(_invoice.InvoiceNumber).AlignRight();
+                    column.Item().Text($"Issued: {_invoice.IssueDate:dd/MM/yyyy}").AlignRight();
+                    column.Item().Text($"Due: {_invoice.DueDate:dd/MM/yyyy}").AlignRight();
+                });
+            });
+        }
         private void ComposeContent(IContainer container) { }
         private void ComposeFooter(IContainer container) { }
     }
