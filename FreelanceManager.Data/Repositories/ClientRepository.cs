@@ -1,3 +1,4 @@
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace FreelanceManager.Data.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<List<Client>> GetAllByUserIdAsync(string userId, string? status = null, string? search = null)
+        public async Task<PageResult<Client>> GetAllByUserIdAsync(string userId, string? status = null, string? search = null, int page = 1, int pageSize = 10)
         {
             var query = _context.Clients.Where(c => c.UserId ==userId);
 
@@ -27,7 +28,16 @@ namespace FreelanceManager.Data.Repositories
             if (!string.IsNullOrEmpty(search))
                 query = query.Where(c => c.Name.Contains(search) || c.CompanyName.Contains(search));
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return new PageResult<Client>
+            {
+                Data = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
         }
         
     }

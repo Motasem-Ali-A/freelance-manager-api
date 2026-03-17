@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.DTOs.Project;
 using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.Exceptions;
@@ -23,14 +24,16 @@ namespace FreelanceManager.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProjects([FromQuery] string? billingType, [FromQuery] string? status, [FromBody] int? clientId)
+        public async Task<IActionResult> GetAllProjects([FromQuery] string? billingType,
+             [FromQuery] string? status, [FromQuery] int? clientId,
+             [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var projects = await _projectRepository.GetAllByUserIdAsync(userId, clientId, status, billingType);
+            var projects = await _projectRepository.GetAllByUserIdAsync(userId, clientId, status, billingType, page, pageSize);
             var responses = new List<ProjectResponseDto>();
-            foreach (var project in projects)
+            foreach (var project in projects.Data)
             {
                 responses.Add(new ProjectResponseDto
                 {
@@ -47,7 +50,14 @@ namespace FreelanceManager.API.Controllers
                     ClientId = project.ClientId
                 });
             }
-            return Ok(responses);
+            return Ok(new PageResult<ProjectResponseDto>
+            {
+                Data = responses,
+                TotalCount = projects.TotalCount,
+                Page = projects.Page,
+                PageSize = projects.PageSize,
+                TotalPages = projects.TotalPages
+            });
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

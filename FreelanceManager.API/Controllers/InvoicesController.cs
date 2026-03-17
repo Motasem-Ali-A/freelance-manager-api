@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.DTOs.Invoice;
 using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.Exceptions;
@@ -22,15 +23,17 @@ namespace FreelanceManager.API.Controllers
             _invoiceService = invoiceService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] string? status)
+        public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from,
+             [FromQuery] DateTime? to, [FromQuery] string? status,
+             [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var invoices = await _invoiceRepository.GetAllByUserIdAsync(userId, from, to, status);
+            var invoices = await _invoiceRepository.GetAllByUserIdAsync(userId, from, to, status, page, pageSize);
             var responses = new List<InvoiceResponseDto>();
-            _invoiceService.ApplyOverdueStatus(invoices);
-            foreach (var invoice in invoices)
+            _invoiceService.ApplyOverdueStatus(invoices.Data);
+            foreach (var invoice in invoices.Data)
             {
                 responses.Add
                 (
@@ -52,7 +55,14 @@ namespace FreelanceManager.API.Controllers
 
                 );
             }
-            return Ok(responses);
+            return Ok(new PageResult<InvoiceResponseDto>
+            {
+                Data = responses,
+                TotalCount = invoices.TotalCount,
+                Page = invoices.Page,
+                PageSize = invoices.PageSize,
+                TotalPages = invoices.TotalPages
+            });
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

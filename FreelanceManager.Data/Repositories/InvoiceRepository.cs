@@ -1,3 +1,4 @@
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -11,7 +12,7 @@ namespace FreelanceManager.Data.Repositories
         {
         }
 
-        public async Task<List<Invoice>> GetAllByUserIdAsync(string userId, DateTime? from, DateTime? to, string? status)
+        public async Task<PageResult<Invoice>> GetAllByUserIdAsync(string userId, DateTime? from, DateTime? to, string? status, int page = 1, int pageSize = 10)
         {
             var query = _context.Invoices.Where(i => i.UserId == userId);
             if (!string.IsNullOrEmpty(status))
@@ -24,7 +25,17 @@ namespace FreelanceManager.Data.Repositories
             if (to.HasValue)
                 query = query.Where(i => i.IssueDate <= to.Value);
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PageResult<Invoice>
+            {
+                Data = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
         }
     }
 }

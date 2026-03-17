@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.DTOs.Client;
 using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
@@ -22,15 +23,15 @@ namespace FreelanceManager.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllClients([FromQuery] string? status,
-            [FromQuery] string? search)
+            [FromQuery] string? search, [FromQuery] int page, [FromQuery] int pagesize)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-            var clients = await _clientRepository.GetAllByUserIdAsync(userId, status, search);
+            var clients = await _clientRepository.GetAllByUserIdAsync(userId, status, search, page, pagesize);
             var responses = new List<ClientResponseDto>();
 
-            foreach (var client in clients)
+            foreach (var client in clients.Data)
             {
                 responses.Add(new ClientResponseDto
                 {
@@ -46,7 +47,14 @@ namespace FreelanceManager.API.Controllers
                 });
             }
 
-            return Ok(responses);
+            return Ok(new PageResult<ClientResponseDto>
+            {
+                Data = responses,
+                TotalCount = clients.TotalCount,
+                Page = clients.Page,
+                PageSize = clients.PageSize,
+                TotalPages = clients.TotalPages
+            });
         }
 
         [HttpGet("{id}")]

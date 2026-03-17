@@ -1,3 +1,4 @@
+using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.Enums;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
@@ -11,7 +12,7 @@ namespace FreelanceManager.Data.Repositories
         {
         }
 
-        public async Task<List<Project>> GetAllByUserIdAsync(string userId, int? clientId, string? status, string? billingType)
+        public async Task<PageResult<Project>> GetAllByUserIdAsync(string userId, int? clientId, string? status, string? billingType, int page = 1, int pageSize = 10)
         {
             var query = _context.Projects.Where(p => p.UserId == userId);
             if (clientId.HasValue)
@@ -27,7 +28,17 @@ namespace FreelanceManager.Data.Repositories
                     query = query.Where(p => p.BillingType == parsedBillingType);
             }
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PageResult<Project>
+            {
+                Data = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
         }
         public async Task<Project?> GetProjectWithTimeEntriesAsync(int id)
         {
