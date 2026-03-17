@@ -60,6 +60,8 @@ namespace FreelanceManager.API.Documents
                     column.Item().PaddingTop(20);
                     // Items table
                     column.Item().Element(ComposeTable);
+                    // Totals
+                    column.Item().Element(ComposeTotals);
                 });
 
             });
@@ -93,6 +95,25 @@ namespace FreelanceManager.API.Documents
                 }
             });
         }
-        private void ComposeFooter(IContainer container) { }
+
+        private void ComposeTotals(IContainer container)
+        {
+            container.Column(column =>
+            {
+                column.Item().Text($"Subtotal: ${_invoice.Subtotal}").AlignRight();
+                column.Item().Text($"Tax ({_invoice.TaxRate * 100}%): ${_invoice.TaxAmount}").AlignRight();
+                column.Item().Text($"Total: ${_invoice.TotalAmount}").Bold().AlignRight();
+            });
+        }
+        private void ComposeFooter(IContainer container)
+        {
+            container.AlignCenter().Text(text =>
+            {
+                text.Span("Page ");
+                text.CurrentPageNumber();
+                text.Span(" of ");
+                text.TotalPages();
+            });
+        }
     }
 }
