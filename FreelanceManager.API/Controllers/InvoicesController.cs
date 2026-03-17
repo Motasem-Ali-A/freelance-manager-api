@@ -1,4 +1,6 @@
+using System.Reflection.Metadata;
 using System.Security.Claims;
+using FreelanceManager.API.Documents;
 using FreelanceManager.Core.DTOs;
 using FreelanceManager.Core.DTOs.Invoice;
 using FreelanceManager.Core.Enums;
@@ -6,7 +8,9 @@ using FreelanceManager.Core.Exceptions;
 using FreelanceManager.Core.interfaces;
 using FreelanceManager.Core.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
 
 namespace FreelanceManager.API.Controllers
 {
@@ -17,10 +21,12 @@ namespace FreelanceManager.API.Controllers
     {
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IInvoiceService _invoiceService;
-        public InvoicesController(IInvoiceRepository invoiceRepository, IInvoiceService invoiceService)
+        private readonly UserManager<AppUser> _userManager;
+        public InvoicesController(IInvoiceRepository invoiceRepository, IInvoiceService invoiceService, UserManager<AppUser> userManager)
         {
             _invoiceRepository = invoiceRepository;
             _invoiceService = invoiceService;
+            _userManager = userManager;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from,
@@ -169,6 +175,24 @@ namespace FreelanceManager.API.Controllers
             await _invoiceRepository.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpGet("{id}/pdf")]
+        public async Task<IActionResult> Pdf(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+            var invoice = await _invoiceRepository.GetInvoiceWithItemsAsync(id);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (invoice == null)
+                throw new NotFoundException($"Invoice with ID {id} not found");
+            if (user == null)
+                return Unauthorized();
+            var document = new InvoicePdfDocument(invoice, user);
+            var pdfBytes = document.GeneratePdf();
+            return File(pdfBytes, "application/pdf", $"Invoice-{invoice.InvoiceNumber}.pdf");
+        }
+
 
     }
 

@@ -37,5 +37,14 @@ namespace FreelanceManager.Data.Repositories
                 TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
             };
         }
+
+        public async Task<Invoice?> GetInvoiceWithItemsAsync(int id)
+        {
+            return await _context.Invoices
+                    .Include(i => i.InvoiceItems)
+                    .Include(i => i.Client)
+                    .FirstOrDefaultAsync(i => i.Id == id);
+                    
+        }
     }
 }
