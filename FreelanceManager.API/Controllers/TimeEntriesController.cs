@@ -70,7 +70,8 @@ namespace FreelanceManager.API.Controllers
                 Date = dto.Date,
                 HoursWorked = dto.HoursWorked,
                 Description = dto.Description,
-                ProjectId = dto.ProjectId
+                ProjectId = dto.ProjectId,
+                UserId = userId
             };
             await _timeEntryRepository.AddAsync(timeEntry);
             await _timeEntryRepository.SaveChangesAsync();
