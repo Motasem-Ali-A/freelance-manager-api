@@ -75,6 +75,12 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     options.IncludeXmlComments(xmlPath);
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Freelance Manager API",
+        Version = "v1",
+        Description = "A backend API for freelancers to manage clients, projects, invoices and generate PDF invoices."
+    });
 });
 
 builder.Services.AddAuthorization();
