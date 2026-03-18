@@ -23,6 +23,13 @@ namespace FreelanceManager.API.Controllers
             _projectService = projectService;
         }
 
+        /// <summary>
+        /// Get all projects for the authenticated user
+        /// </summary>
+        /// <param name="billingType">Filter by billing type (Hourly/Fixed)</param>
+        /// <param name="status">Filter by status (NotStarted/InProgress/Completed/OnHold)</param>
+        /// <param name="clientId">Filter by client ID</param>
+        /// <returns>A paginated list of projects</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllProjects([FromQuery] string? billingType,
              [FromQuery] string? status, [FromQuery] int? clientId,
@@ -59,6 +66,12 @@ namespace FreelanceManager.API.Controllers
                 TotalPages = projects.TotalPages
             });
         }
+
+        /// <summary>
+        /// Get an project by ID
+        /// </summary>
+        /// <param name="id">The Project ID</param>
+        /// <returns>Project details</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -82,6 +95,10 @@ namespace FreelanceManager.API.Controllers
                 ClientId = project.ClientId
             });
         }
+
+        /// <summary>
+        /// Add a project
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> AddProject([FromBody] CreateProjectDto dto)
         {
@@ -125,6 +142,9 @@ namespace FreelanceManager.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = project.Id }, response);
         }
 
+        /// <summary>
+        /// Update the information of certian project
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
         {
@@ -157,6 +177,9 @@ namespace FreelanceManager.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Delete a project and all of it's associated invoices and time entries
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {

@@ -19,6 +19,11 @@ namespace FreelanceManager.API.Controllers
         {
             _timeEntryRepository = timeEntryRepository;
         }
+
+        /// <summary>
+        /// Get all time entries for the authenticated user
+        /// </summary>
+        /// <returns>A list of time entries</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -42,6 +47,12 @@ namespace FreelanceManager.API.Controllers
             }
             return Ok(responses);
         }
+
+        /// <summary>
+        /// Get a time entry by ID
+        /// </summary>
+        /// <param name="id">The time entry ID</param>
+        /// <returns>Time entry details</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -58,6 +69,9 @@ namespace FreelanceManager.API.Controllers
                 ProjectId = timeEntry.ProjectId
             });
         }
+
+        /// <summary>
+        /// Add a time entry
         [HttpPost]
         public async Task<IActionResult> AddTimeEntry([FromBody] CreateTimeEntryDto dto)
         {
@@ -86,6 +100,10 @@ namespace FreelanceManager.API.Controllers
             };
             return CreatedAtAction(nameof(GetById), new { id = timeEntry.Id }, response);
         }
+
+         /// <summary>
+        /// Update the information of certian time entry
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryDto dto)
         {
@@ -106,6 +124,9 @@ namespace FreelanceManager.API.Controllers
                 ProjectId = timeEntry.ProjectId
             });
         }
+
+         /// <summary>
+        /// Delete a time entry
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTimeEntry(int id)
         {

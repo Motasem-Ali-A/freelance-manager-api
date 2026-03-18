@@ -24,6 +24,9 @@ namespace FreelanceManager.API.Controllers
             _invoiceService = invoiceService;
         }
 
+        /// <summary>
+        /// Add an invoice item
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> AddInvoiceItem([FromBody] CreateInvoiceItemDto dto)
         {

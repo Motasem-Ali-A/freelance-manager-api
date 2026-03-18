@@ -18,6 +18,9 @@ namespace FreelanceManager.API.Controllers
             _tokenService= tokenService;
         }
 
+        /// <summary>
+        /// Register (new user)
+        /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -33,6 +36,11 @@ namespace FreelanceManager.API.Controllers
                 return BadRequest(result.Errors);
             return Ok("User registered successfully");
         }
+
+        /// <summary>
+        /// Login (existing user)
+        /// </summary>
+        /// <returns>Uesr details and JWT token</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {

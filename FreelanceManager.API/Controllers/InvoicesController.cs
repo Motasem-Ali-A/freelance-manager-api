@@ -28,6 +28,14 @@ namespace FreelanceManager.API.Controllers
             _invoiceService = invoiceService;
             _userManager = userManager;
         }
+
+        /// <summary>
+        /// Get all invoices for the authenticated user
+        /// </summary>
+        /// <param name="from">Filter by date (all invoices after the date)</param>
+        /// <param name="to">Filter by date (all invoices before the date)</param>
+        /// <param name="status">Filter by status (Draft/Sent/Paid/Overdue)</param>
+        /// <returns>A paginated list of invoices</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from,
              [FromQuery] DateTime? to, [FromQuery] string? status,
@@ -70,6 +78,12 @@ namespace FreelanceManager.API.Controllers
                 TotalPages = invoices.TotalPages
             });
         }
+
+        /// <summary>
+        /// Get an invoice by ID
+        /// </summary>
+        /// <param name="id">The invoice ID</param>
+        /// <returns>invoice details</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -94,6 +108,10 @@ namespace FreelanceManager.API.Controllers
                 ClientId = invoice.ClientId
             });
         }
+
+        /// <summary>
+        /// Add an invoice
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> AddInvoice([FromBody] CreateInvoiceDto dto)
         {
@@ -138,6 +156,10 @@ namespace FreelanceManager.API.Controllers
             };
             return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, response);
         }
+
+        /// <summary>
+        /// Update the information of certian invoice
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateInvoice(int id, [FromBody] UpdateInvoiceDto dto)
         {
@@ -165,6 +187,10 @@ namespace FreelanceManager.API.Controllers
                 ClientId = invoice.ClientId
             });
         }
+
+        /// <summary>
+        /// Delete an invoice and all of it's associated invoice items
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
@@ -176,6 +202,11 @@ namespace FreelanceManager.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Create a downloadable PDF file detailing the invoice
+        /// </summary>
+        /// <param name="id">The invoice ID</param>
+        /// <returns>PDF file</returns>
         [HttpGet("{id}/pdf")]
         public async Task<IActionResult> Pdf(int id)
         {

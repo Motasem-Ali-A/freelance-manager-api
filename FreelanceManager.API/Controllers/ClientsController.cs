@@ -20,7 +20,12 @@ namespace FreelanceManager.API.Controllers
             _clientRepository = clientRepository;
 
         }
-
+        /// <summary>
+        /// Get all clients for the authenticated user
+        /// </summary>
+        /// <param name="status">Filter by status (Active/Inactive)</param>
+        /// <param name="search">Search by name or company name</param>
+        /// <returns>A paginated list of clients</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllClients([FromQuery] string? status,
             [FromQuery] string? search, [FromQuery] int page, [FromQuery] int pagesize)
@@ -57,6 +62,11 @@ namespace FreelanceManager.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Get a client by ID
+        /// </summary>
+        /// <param name="id">The client ID</param>
+        /// <returns>Client details</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -76,6 +86,10 @@ namespace FreelanceManager.API.Controllers
                 CreatedAt = client.CreatedAt
             });
         }
+
+        /// <summary>
+        /// Add a client
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> AddClient([FromBody] CreateClientDto dto)
         {
@@ -114,6 +128,9 @@ namespace FreelanceManager.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = client.Id }, response);
         }
 
+        /// <summary>
+        /// Update the information of certian client
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient(int id, [FromBody] UpdateClientDto dto)
         {
@@ -142,6 +159,9 @@ namespace FreelanceManager.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Delete a client and all their associated projects and invoices
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {

@@ -18,6 +18,11 @@ namespace FreelanceManager.API.Controllers
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Get user dashboard summary
+        /// </summary>
+        /// <returns>Summary details</returns>
         [HttpGet]
         public async Task<IActionResult> Summary()
         {
