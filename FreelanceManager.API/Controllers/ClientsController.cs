@@ -12,6 +12,7 @@ namespace FreelanceManager.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Tags("Clients")]
     public class ClientsController : ControllerBase
     {
         private readonly IClientRepository _clientRepository;

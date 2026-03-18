@@ -13,6 +13,7 @@ namespace FreelanceManager.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Tags("Projects")]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectRepository _projectRepository;

@@ -11,6 +11,7 @@ namespace FreelanceManager.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Tags("Dashboard")]
     public class DashboardController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

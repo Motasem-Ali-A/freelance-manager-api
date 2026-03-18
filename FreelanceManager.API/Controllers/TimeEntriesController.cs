@@ -12,6 +12,7 @@ namespace FreelanceManager.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Tags("Time Entries")]
     public class TimeEntriesController : ControllerBase
     {
         private readonly ITimeEntryRepository _timeEntryRepository;

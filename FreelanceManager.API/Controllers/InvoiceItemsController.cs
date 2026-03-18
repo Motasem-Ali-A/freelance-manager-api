@@ -13,6 +13,7 @@ namespace FreelanceManager.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Tags("Invoice Items")]
     public class InvoiceItemsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
