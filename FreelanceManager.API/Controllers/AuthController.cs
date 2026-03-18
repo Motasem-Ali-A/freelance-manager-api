@@ -22,6 +22,8 @@ namespace FreelanceManager.API.Controllers
         /// Register (new user)
         /// </summary>
         [HttpPost("register")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             var user = new AppUser
@@ -42,6 +44,8 @@ namespace FreelanceManager.API.Controllers
         /// </summary>
         /// <returns>Uesr details and JWT token</returns>
         [HttpPost("login")]
+        [ProducesResponseType(typeof(AuthResponseDto),200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);

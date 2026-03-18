@@ -27,6 +27,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="search">Search by name or company name</param>
         /// <returns>A paginated list of clients</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(ClientResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllClients([FromQuery] string? status,
             [FromQuery] string? search, [FromQuery] int page, [FromQuery] int pagesize)
         {
@@ -68,6 +70,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="id">The client ID</param>
         /// <returns>Client details</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ClientResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(int id)
         {
             var client = await _clientRepository.GetByIdAsync(id);
@@ -91,6 +95,7 @@ namespace FreelanceManager.API.Controllers
         /// Add a client
         /// </summary>
         [HttpPost]
+        [ProducesResponseType(typeof(ClientResponseDto), 201)]
         public async Task<IActionResult> AddClient([FromBody] CreateClientDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -132,6 +137,8 @@ namespace FreelanceManager.API.Controllers
         /// Update the information of certian client
         /// </summary>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ClientResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateClient(int id, [FromBody] UpdateClientDto dto)
         {
             var client = await _clientRepository.GetByIdAsync(id);
@@ -163,6 +170,8 @@ namespace FreelanceManager.API.Controllers
         /// Delete a client and all their associated projects and invoices
         /// </summary>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteClient(int id)
         {
             var client = await _clientRepository.GetByIdAsync(id);

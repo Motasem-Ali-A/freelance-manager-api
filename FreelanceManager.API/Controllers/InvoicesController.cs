@@ -37,6 +37,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="status">Filter by status (Draft/Sent/Paid/Overdue)</param>
         /// <returns>A paginated list of invoices</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(InvoiceResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllInvoices([FromQuery] DateTime? from,
              [FromQuery] DateTime? to, [FromQuery] string? status,
              [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -85,6 +87,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="id">The invoice ID</param>
         /// <returns>invoice details</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(InvoiceResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(int id)
         {
 
@@ -113,6 +117,7 @@ namespace FreelanceManager.API.Controllers
         /// Add an invoice
         /// </summary>
         [HttpPost]
+        [ProducesResponseType(typeof(InvoiceResponseDto), 201)]
         public async Task<IActionResult> AddInvoice([FromBody] CreateInvoiceDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -161,6 +166,8 @@ namespace FreelanceManager.API.Controllers
         /// Update the information of certian invoice
         /// </summary>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(InvoiceResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateInvoice(int id, [FromBody] UpdateInvoiceDto dto)
         {
             var invoice = await _invoiceRepository.GetByIdAsync(id);
@@ -192,6 +199,8 @@ namespace FreelanceManager.API.Controllers
         /// Delete an invoice and all of it's associated invoice items
         /// </summary>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
             var invoice = await _invoiceRepository.GetByIdAsync(id);
@@ -208,6 +217,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="id">The invoice ID</param>
         /// <returns>PDF file</returns>
         [HttpGet("{id}/pdf")]
+        [ProducesResponseType(typeof(File), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Pdf(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

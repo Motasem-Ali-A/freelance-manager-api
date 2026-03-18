@@ -31,6 +31,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="clientId">Filter by client ID</param>
         /// <returns>A paginated list of projects</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(ProjectResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllProjects([FromQuery] string? billingType,
              [FromQuery] string? status, [FromQuery] int? clientId,
              [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -68,11 +70,13 @@ namespace FreelanceManager.API.Controllers
         }
 
         /// <summary>
-        /// Get an project by ID
+        /// Get a project by ID
         /// </summary>
         /// <param name="id">The Project ID</param>
         /// <returns>Project details</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ProjectResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(int id)
         {
             var project = await _projectRepository.GetProjectWithTimeEntriesAsync(id);
@@ -100,6 +104,7 @@ namespace FreelanceManager.API.Controllers
         /// Add a project
         /// </summary>
         [HttpPost]
+        [ProducesResponseType(typeof(ProjectResponseDto), 201)]
         public async Task<IActionResult> AddProject([FromBody] CreateProjectDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -146,6 +151,8 @@ namespace FreelanceManager.API.Controllers
         /// Update the information of certian project
         /// </summary>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ProjectResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
         {
             var project = await _projectRepository.GetByIdAsync(id);
@@ -181,6 +188,8 @@ namespace FreelanceManager.API.Controllers
         /// Delete a project and all of it's associated invoices and time entries
         /// </summary>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteProject(int id)
         {
             var project = await _projectRepository.GetByIdAsync(id);

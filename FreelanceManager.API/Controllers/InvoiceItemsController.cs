@@ -28,6 +28,7 @@ namespace FreelanceManager.API.Controllers
         /// Add an invoice item
         /// </summary>
         [HttpPost]
+        [ProducesResponseType(201)]
         public async Task<IActionResult> AddInvoiceItem([FromBody] CreateInvoiceItemDto dto)
         {
             var invoice = await _context.Invoices

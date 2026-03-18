@@ -24,6 +24,7 @@ namespace FreelanceManager.API.Controllers
         /// </summary>
         /// <returns>Summary details</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(DashboardSummaryDto),200)]
         public async Task<IActionResult> Summary()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

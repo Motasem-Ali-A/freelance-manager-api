@@ -25,6 +25,8 @@ namespace FreelanceManager.API.Controllers
         /// </summary>
         /// <returns>A list of time entries</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(TimeEntryResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAll()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -54,6 +56,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="id">The time entry ID</param>
         /// <returns>Time entry details</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(TimeEntryResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(int id)
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
@@ -73,6 +77,7 @@ namespace FreelanceManager.API.Controllers
         /// <summary>
         /// Add a time entry
         [HttpPost]
+        [ProducesResponseType(typeof(TimeEntryResponseDto), 201)]
         public async Task<IActionResult> AddTimeEntry([FromBody] CreateTimeEntryDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -105,6 +110,8 @@ namespace FreelanceManager.API.Controllers
         /// Update the information of certian time entry
         /// </summary>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(TimeEntryResponseDto), 200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateTimeEntry(int id, [FromBody] UpdateTimeEntryDto dto)
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
@@ -128,6 +135,8 @@ namespace FreelanceManager.API.Controllers
          /// <summary>
         /// Delete a time entry
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteTimeEntry(int id)
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(id);
