@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using FreelanceManager.API.Middleware;
 using FreelanceManager.API.Services;
@@ -71,6 +72,9 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddAuthorization();
