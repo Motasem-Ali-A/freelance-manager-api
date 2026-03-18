@@ -36,6 +36,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="from">Filter by date (all invoices after the date)</param>
         /// <param name="to">Filter by date (all invoices before the date)</param>
         /// <param name="status">Filter by status (Draft/Sent/Paid/Overdue)</param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
         /// <returns>A paginated list of invoices</returns>
         [HttpGet]
         [ProducesResponseType(typeof(InvoiceResponseDto), 200)]

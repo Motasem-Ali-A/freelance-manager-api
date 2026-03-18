@@ -30,6 +30,8 @@ namespace FreelanceManager.API.Controllers
         /// <param name="billingType">Filter by billing type (Hourly/Fixed)</param>
         /// <param name="status">Filter by status (NotStarted/InProgress/Completed/OnHold)</param>
         /// <param name="clientId">Filter by client ID</param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
         /// <returns>A paginated list of projects</returns>
         [HttpGet]
         [ProducesResponseType(typeof(ProjectResponseDto), 200)]

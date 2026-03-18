@@ -77,6 +77,7 @@ namespace FreelanceManager.API.Controllers
 
         /// <summary>
         /// Add a time entry
+        /// </summary>
         [HttpPost]
         [ProducesResponseType(typeof(TimeEntryResponseDto), 201)]
         public async Task<IActionResult> AddTimeEntry([FromBody] CreateTimeEntryDto dto)
@@ -133,8 +134,9 @@ namespace FreelanceManager.API.Controllers
             });
         }
 
-         /// <summary>
+        /// <summary>
         /// Delete a time entry
+        /// </summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

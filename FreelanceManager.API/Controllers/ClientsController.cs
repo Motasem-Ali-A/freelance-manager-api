@@ -26,6 +26,8 @@ namespace FreelanceManager.API.Controllers
         /// </summary>
         /// <param name="status">Filter by status (Active/Inactive)</param>
         /// <param name="search">Search by name or company name</param>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
         /// <returns>A paginated list of clients</returns>
         [HttpGet]
         [ProducesResponseType(typeof(ClientResponseDto), 200)]
